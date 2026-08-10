@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>legato</ToolCommandName>
+    <PackageId>LegatoBS.Tool</PackageId>
+    <Version>$(LegatoVersion)</Version>
+    <Title>Legato CLI</Title>
+    <Authors>ScoreSaber</Authors>
+    <Description>Adds Legato to a Beat Saber mod project</Description>
+    <PackageTags>beat-saber;modding;compatibility;polyfill;dotnet-tool</PackageTags>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/ScoreSaber/legato</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ScoreSaber/legato.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AssemblyMetadata Include="LegatoPackageVersion" Value="$(LegatoVersion)" />
+    <EmbeddedResource Include="..\Build\Legato.Versions.props" LogicalName="Legato.Versions.props" />
+    <None Include="..\README.md" Pack="true" PackagePath="README.md" />
+  </ItemGroup>
+</Project>

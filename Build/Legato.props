@@ -1,0 +1,7 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)Legato.Versions.props" />
+
+  <PropertyGroup>
+    <LegatoSourceRoot Condition="'$(LegatoSourceRoot)' == ''">$(MSBuildThisFileDirectory)Source\</LegatoSourceRoot>
+  </PropertyGroup>
+</Project>

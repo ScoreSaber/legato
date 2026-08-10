@@ -1,0 +1,8 @@
+.DS_Store
+.vs/
+/.legato/
+artifacts/
+bin/
+obj/
+*.suo
+*.user

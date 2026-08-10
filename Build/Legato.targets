@@ -1,0 +1,229 @@
+<Project>
+  <Import Project="$(MSBuildProjectFullPath).user" Condition="'$(BeatSaberDir)' == '' AND Exists('$(MSBuildProjectFullPath).user')" />
+
+  <PropertyGroup>
+    <LegatoTargetVersion Condition="'$(LegatoTargetVersion)' == ''">$(LegatoCurrentVersion)</LegatoTargetVersion>
+    <LegatoSourceVersion Condition="'$(LegatoSourceVersion)' == '' AND '$(GameVersion)' != ''">$(GameVersion)</LegatoSourceVersion>
+    <LegatoSourceVersion Condition="'$(LegatoSourceVersion)' == ''">$(LegatoCurrentVersion)</LegatoSourceVersion>
+    <LegatoReferenceRoot Condition="'$(GameReferences)' != ''">$(GameReferences)</LegatoReferenceRoot>
+    <LegatoReferenceRoot Condition="'$(LegatoReferenceRoot)' == ''">$(BeatSaberDir)</LegatoReferenceRoot>
+  </PropertyGroup>
+
+  <Target Name="LegatoConfigure" BeforeTargets="PrepareForBuild">
+    <ItemGroup>
+      <_LegatoTargetVersion Include="@(LegatoGameVersion->WithMetadataValue('Identity', '$(LegatoTargetVersion)'))" />
+      <_LegatoSourceVersion Include="@(LegatoGameVersion->WithMetadataValue('Identity', '$(LegatoSourceVersion)'))" />
+    </ItemGroup>
+    <PropertyGroup>
+      <LegatoTargetProfile>@(_LegatoTargetVersion->'%(Profile)')</LegatoTargetProfile>
+      <LegatoTargetOrder>@(_LegatoTargetVersion->'%(Order)')</LegatoTargetOrder>
+      <LegatoSourceProfile>@(_LegatoSourceVersion->'%(Profile)')</LegatoSourceProfile>
+      <LegatoSourceOrder>@(_LegatoSourceVersion->'%(Order)')</LegatoSourceOrder>
+      <LegatoTargetDefine Condition="'$(LegatoTargetProfile)' != ''">BEAT_SABER_$([System.String]::Copy('$(LegatoTargetProfile)').Replace('.', '_'))</LegatoTargetDefine>
+      <DefineConstants Condition="'$(LegatoTargetDefine)' != ''">$(DefineConstants);$(LegatoTargetDefine)</DefineConstants>
+    </PropertyGroup>
+    <Error Condition="'$(LegatoTargetProfile)' == ''" Text="Legato does not support Beat Saber $(LegatoTargetVersion)" />
+    <Error Condition="'$(LegatoSourceProfile)' == ''" Text="Legato does not support source written for Beat Saber $(LegatoSourceVersion)" />
+  </Target>
+
+  <Target Name="LegatoAddRequiredReferences" BeforeTargets="ResolveAssemblyReferences" DependsOnTargets="LegatoConfigure">
+    <ItemGroup>
+      <Reference Remove="SongDataCore"
+                 Condition="'$(LegatoSourceProfile)' == '1.29.0' AND !Exists('$(LegatoReferenceRoot)\Plugins\SongDataCore.dll') AND Exists('$(LegatoReferenceRoot)\Libs\SongDetailsCache.dll')" />
+      <Reference Include="SongDetailsCache"
+                 Condition="'$(LegatoSourceProfile)' == '1.29.0' AND '@(Reference->WithMetadataValue('Identity', 'SongDetailsCache'))' == '' AND !Exists('$(LegatoReferenceRoot)\Plugins\SongDataCore.dll') AND Exists('$(LegatoReferenceRoot)\Libs\SongDetailsCache.dll')">
+        <HintPath>$(LegatoReferenceRoot)\Libs\SongDetailsCache.dll</HintPath>
+        <Private>false</Private>
+      </Reference>
+      <Reference Remove="Polyglot"
+                 Condition="!Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\Polyglot.dll') AND Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\BGLib.Polyglot.dll')" />
+      <Reference Include="BGLib.Polyglot"
+                 Condition="'@(Reference->WithMetadataValue('Identity', 'BGLib.Polyglot'))' == '' AND !Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\Polyglot.dll') AND Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\BGLib.Polyglot.dll')">
+        <HintPath>$(LegatoReferenceRoot)\Beat Saber_Data\Managed\BGLib.Polyglot.dll</HintPath>
+        <Private>false</Private>
+      </Reference>
+      <Reference Include="DataModels" Condition="'@(Reference->WithMetadataValue('Identity', 'DataModels'))' == '' AND Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\DataModels.dll')">
+        <HintPath>$(LegatoReferenceRoot)\Beat Saber_Data\Managed\DataModels.dll</HintPath>
+        <Private>false</Private>
+      </Reference>
+      <Reference Include="AdditionalContentModel.Interfaces" Condition="'@(Reference->WithMetadataValue('Identity', 'AdditionalContentModel.Interfaces'))' == '' AND Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\AdditionalContentModel.Interfaces.dll')">
+        <HintPath>$(LegatoReferenceRoot)\Beat Saber_Data\Managed\AdditionalContentModel.Interfaces.dll</HintPath>
+        <Private>false</Private>
+      </Reference>
+      <Reference Include="BGLib.AppFlow" Condition="'@(Reference->WithMetadataValue('Identity', 'BGLib.AppFlow'))' == '' AND Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\BGLib.AppFlow.dll')">
+        <HintPath>$(LegatoReferenceRoot)\Beat Saber_Data\Managed\BGLib.AppFlow.dll</HintPath>
+        <Private>false</Private>
+      </Reference>
+      <Reference Include="BGLib.UnityExtension" Condition="'@(Reference->WithMetadataValue('Identity', 'BGLib.UnityExtension'))' == '' AND Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\BGLib.UnityExtension.dll')">
+        <HintPath>$(LegatoReferenceRoot)\Beat Saber_Data\Managed\BGLib.UnityExtension.dll</HintPath>
+        <Private>false</Private>
+      </Reference>
+      <Reference Include="Colors" Condition="'@(Reference->WithMetadataValue('Identity', 'Colors'))' == '' AND Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\Colors.dll')">
+        <HintPath>$(LegatoReferenceRoot)\Beat Saber_Data\Managed\Colors.dll</HintPath>
+        <Private>false</Private>
+      </Reference>
+      <Reference Include="GameplayCore" Condition="'@(Reference->WithMetadataValue('Identity', 'GameplayCore'))' == '' AND Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\GameplayCore.dll')">
+        <HintPath>$(LegatoReferenceRoot)\Beat Saber_Data\Managed\GameplayCore.dll</HintPath>
+        <Private>false</Private>
+      </Reference>
+      <Reference Include="BeatSaber.ViewSystem" Condition="'@(Reference->WithMetadataValue('Identity', 'BeatSaber.ViewSystem'))' == '' AND Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\BeatSaber.ViewSystem.dll')">
+        <HintPath>$(LegatoReferenceRoot)\Beat Saber_Data\Managed\BeatSaber.ViewSystem.dll</HintPath>
+        <Private>false</Private>
+      </Reference>
+      <Reference Include="SegmentedControl" Condition="'@(Reference->WithMetadataValue('Identity', 'SegmentedControl'))' == '' AND Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\SegmentedControl.dll')">
+        <HintPath>$(LegatoReferenceRoot)\Beat Saber_Data\Managed\SegmentedControl.dll</HintPath>
+        <Private>false</Private>
+      </Reference>
+      <Reference Include="UnityEngine.UnityWebRequestModule" Condition="'@(Reference->WithMetadataValue('Identity', 'UnityEngine.UnityWebRequestModule'))' == '' AND Exists('$(LegatoReferenceRoot)\Beat Saber_Data\Managed\UnityEngine.UnityWebRequestModule.dll')">
+        <HintPath>$(LegatoReferenceRoot)\Beat Saber_Data\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+        <Private>false</Private>
+      </Reference>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="LegatoAddBaseSources" BeforeTargets="CoreCompile" DependsOnTargets="LegatoConfigure">
+    <ItemGroup>
+      <Compile Include="$(LegatoSourceRoot)GlobalUsings.cs;$(LegatoSourceRoot)Library\Platform\Authentication\**\*.cs;$(LegatoSourceRoot)Library\Platform\Friends\**\*.cs;$(LegatoSourceRoot)Library\XR\Headset\**\*.cs;$(LegatoSourceRoot)Library\XR\InputFocus\**\*.cs" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\**\*.cs" Exclude="$(LegatoSourceRoot)Polyfills\System\**\*.cs" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\System\**\*.cs" />
+      <Compile Remove="$(LegatoSourceRoot)**\Versions\**\*.cs" />
+      <Compile Remove="$(LegatoSourceRoot)ForwardPolyfills\**\*.cs" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\**\Versions\$(LegatoTargetProfile)\**\*.cs" Condition="'$(LegatoTargetProfile)' != ''" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\**\Versions\1.29.0-1.37.1\**\*.cs" Condition="'$(LegatoTargetProfile)' == '1.29.0' OR '$(LegatoTargetProfile)' == '1.37.1'" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\**\Versions\1.29.0-1.38.0\**\*.cs" Condition="'$(LegatoTargetProfile)' == '1.29.0' OR '$(LegatoTargetProfile)' == '1.37.1' OR '$(LegatoTargetProfile)' == '1.38.0'" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\**\Versions\1.29.0-1.40.0\**\*.cs" Condition="'$(LegatoTargetProfile)' == '1.29.0' OR '$(LegatoTargetProfile)' == '1.37.1' OR '$(LegatoTargetProfile)' == '1.38.0' OR '$(LegatoTargetProfile)' == '1.40.0'" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\**\Versions\1.37.1-1.40.0\**\*.cs" Condition="'$(LegatoTargetProfile)' == '1.37.1' OR '$(LegatoTargetProfile)' == '1.38.0' OR '$(LegatoTargetProfile)' == '1.40.0'" />
+      <Compile Include="$(LegatoSourceRoot)ForwardPolyfills\**\Transitions\1.29.0-1.37.1\**\*.cs" Condition="'$(LegatoSourceOrder)' != '' AND '$(LegatoTargetOrder)' != '' AND $(LegatoSourceOrder) &lt;= 0 AND $(LegatoTargetOrder) &gt;= 1" />
+      <Compile Remove="$(LegatoSourceRoot)Library\Presentation\**\*.cs;$(LegatoSourceRoot)Library\Resources\**\*.cs;$(LegatoSourceRoot)Polyfills\BeatSaberMarkupLanguage\**\*.cs" />
+      <Compile Remove="$(LegatoSourceRoot)Polyfills\LeaderboardCore\**\*.cs" />
+      <Compile Remove="$(LegatoSourceRoot)Polyfills\SongCore\**\*.cs" />
+      <Compile Remove="$(LegatoSourceRoot)Polyfills\SongDataCore\**\*.cs" />
+      <Compile Remove="$(LegatoSourceRoot)Polyfills\BS_Utils\**\*.cs" />
+      <Compile Remove="$(LegatoSourceRoot)Polyfills\SiraUtil\**\*.cs" />
+      <Compile Remove="$(LegatoSourceRoot)Polyfills\GlobalNamespace\BeatmapKey\BeatmapKeyExtensions.cs" />
+      <Compile Remove="$(LegatoSourceRoot)Polyfills\GlobalNamespace\BeatmapLevelPack\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\LevelCollectionNavigationController\BeatmapLevelPackAdapterExtensions.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\LevelCollectionViewController\BeatmapLevelPackAdapterExtensions.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\LevelCollectionViewController\BeatmapLevelSelectionSubscription.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\LevelFilteringNavigationController\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\LevelSelectionNavigationController\LevelSelectionSession.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\StandardLevelDetailViewController\**\*.cs" />
+      <Compile Remove="$(LegatoSourceRoot)Library\Beatmaps\**\*.cs" />
+      <Compile Remove="$(LegatoSourceRoot)Library\Gameplay\GameplayMetadataProvider.cs;$(LegatoSourceRoot)Library\Platform\**\*.cs;$(LegatoSourceRoot)Library\Rooms\**\*.cs;$(LegatoSourceRoot)Library\XR\XrDeviceDiscovery.cs" />
+      <Compile Remove="$(LegatoSourceRoot)Polyfills\GlobalNamespace\MainCamera\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\OculusVRHelper\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\PauseController\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\UnityXRHelper\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\UnityXRSystemState\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\VariableMovementDataProvider\**\*.cs" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="LegatoAddOptionalSources" BeforeTargets="CoreCompile" DependsOnTargets="LegatoAddBaseSources;ResolveReferences">
+    <ItemGroup>
+      <_LegatoBSMLReference Include="@(ReferencePath->WithMetadataValue('Filename', 'BSML'))" />
+      <_LegatoLeaderboardCoreReference Include="@(ReferencePath->WithMetadataValue('Filename', 'LeaderboardCore'))" />
+      <_LegatoSiraUtilReference Include="@(ReferencePath->WithMetadataValue('Filename', 'SiraUtil'))" />
+      <_LegatoSongCoreReference Include="@(ReferencePath->WithMetadataValue('Filename', 'SongCore'))" />
+      <_LegatoSongDataCoreReference Include="@(ReferencePath->WithMetadataValue('Filename', 'SongDataCore'))" />
+      <_LegatoSongDetailsReference Include="@(ReferencePath->WithMetadataValue('Filename', 'SongDetailsCache'))" />
+      <_LegatoBSUtilsReference Include="@(ReferencePath->WithMetadataValue('Filename', 'BS_Utils'))" />
+      <_LegatoIPAReference Include="@(ReferencePath->WithMetadataValue('Filename', 'IPA.Loader'))" />
+      <_LegatoGameSettingsReference Include="@(ReferencePath->WithMetadataValue('Filename', 'BeatSaber.GameSettings'))" />
+      <_LegatoPlatformUserModelReference Include="@(ReferencePath->WithMetadataValue('Filename', 'PlatformUserModel'))" />
+      <_LegatoOculusPlatformReference Include="@(ReferencePath->WithMetadataValue('Filename', 'Oculus.Platform'))" />
+      <_LegatoPlatformCoreReference Include="@(ReferencePath->WithMetadataValue('Filename', 'OculusStudios.Platform.Core'))" />
+      <_LegatoSteamReference Include="@(ReferencePath->WithMetadataValue('Filename', 'com.rlabrecque.steamworks.net'))" />
+      <_LegatoHarmonyReference Include="@(ReferencePath->WithMetadataValue('Filename', '0Harmony'))" />
+      <_LegatoHttpReference Include="@(ReferencePath->WithMetadataValue('Filename', 'System.Net.Http'))" />
+      <_LegatoSpatialTrackingReference Include="@(ReferencePath->WithMetadataValue('Filename', 'UnityEngine.SpatialTracking'))" />
+      <_LegatoXRReference Include="@(ReferencePath->WithMetadataValue('Filename', 'UnityEngine.XRModule'))" />
+      <_LegatoOpenXRReference Include="@(ReferencePath->WithMetadataValue('Filename', 'Unity.XR.OpenXR'))" />
+      <_LegatoMainReference Include="@(ReferencePath->WithMetadataValue('Filename', 'Main'))" />
+      <_LegatoDataModelsReference Include="@(ReferencePath->WithMetadataValue('Filename', 'DataModels'))" />
+      <_LegatoAudioReference Include="@(ReferencePath->WithMetadataValue('Filename', 'BeatSaber.Audio.Common'))" />
+      <_LegatoColorsReference Include="@(ReferencePath->WithMetadataValue('Filename', 'Colors'))" />
+      <_LegatoGameplayCoreReference Include="@(ReferencePath->WithMetadataValue('Filename', 'GameplayCore'))" />
+      <_LegatoUnityReference Include="@(ReferencePath->WithMetadataValue('Filename', 'UnityEngine.CoreModule'))" />
+      <_LegatoZenjectReference Include="@(ReferencePath->WithMetadataValue('Filename', 'Zenject'))" />
+      <_LegatoHMLibReference Include="@(ReferencePath->WithMetadataValue('Filename', 'HMLib'))" />
+    </ItemGroup>
+    <PropertyGroup>
+      <LegatoEnableBSML Condition="'$(LegatoEnableBSML)' == '' AND '@(_LegatoBSMLReference)' != ''">true</LegatoEnableBSML>
+      <LegatoEnableLeaderboardCore Condition="'$(LegatoEnableLeaderboardCore)' == '' AND '@(_LegatoLeaderboardCoreReference)' != ''">true</LegatoEnableLeaderboardCore>
+      <LegatoEnableSiraUtil Condition="'$(LegatoEnableSiraUtil)' == '' AND '@(_LegatoSiraUtilReference)' != ''">true</LegatoEnableSiraUtil>
+      <LegatoEnableSongCore Condition="'$(LegatoEnableSongCore)' == '' AND '@(_LegatoSongCoreReference)' != ''">true</LegatoEnableSongCore>
+      <LegatoEnableSongDataCompatibility Condition="'$(LegatoEnableSongDataCompatibility)' == '' AND '@(_LegatoSongDataCoreReference)' == '' AND '@(_LegatoSongDetailsReference)' != ''">true</LegatoEnableSongDataCompatibility>
+      <LegatoEnableBSUtils Condition="'$(LegatoEnableBSUtils)' == '' AND '@(_LegatoBSUtilsReference)' != ''">true</LegatoEnableBSUtils>
+      <LegatoEnableGameSettings Condition="'$(LegatoEnableGameSettings)' == '' AND '@(_LegatoGameSettingsReference)' != ''">true</LegatoEnableGameSettings>
+      <LegatoEnablePlatform Condition="'$(LegatoEnablePlatform)' == '' AND '$(LegatoTargetProfile)' == '1.29.0' AND '@(_LegatoMainReference)' != '' AND '@(_LegatoOculusPlatformReference)' != ''">true</LegatoEnablePlatform>
+      <LegatoEnablePlatform Condition="'$(LegatoEnablePlatform)' == '' AND ('$(LegatoTargetProfile)' == '1.37.1' OR '$(LegatoTargetProfile)' == '1.38.0' OR '$(LegatoTargetProfile)' == '1.40.0') AND '@(_LegatoPlatformUserModelReference)' != ''">true</LegatoEnablePlatform>
+      <LegatoEnablePlatform Condition="'$(LegatoEnablePlatform)' == '' AND '$(LegatoTargetProfile)' == '1.42.0' AND '@(_LegatoPlatformCoreReference)' != '' AND '@(_LegatoSteamReference)' != ''">true</LegatoEnablePlatform>
+      <LegatoEnableHarmonyEvents Condition="'$(LegatoEnableHarmonyEvents)' == '' AND '@(_LegatoHarmonyReference)' != ''">true</LegatoEnableHarmonyEvents>
+      <LegatoEnableHttp Condition="'$(LegatoEnableHttp)' == '' AND '@(_LegatoHttpReference)' != ''">true</LegatoEnableHttp>
+      <LegatoEnableSpatialTracking Condition="'$(LegatoEnableSpatialTracking)' == '' AND '@(_LegatoSpatialTrackingReference)' != ''">true</LegatoEnableSpatialTracking>
+      <LegatoEnableXR Condition="'$(LegatoEnableXR)' == '' AND '@(_LegatoXRReference)' != '' AND ('$(LegatoTargetProfile)' == '1.29.0' OR '@(_LegatoOpenXRReference)' != '')">true</LegatoEnableXR>
+      <LegatoEnableGameplay Condition="'$(LegatoEnableGameplay)' == '' AND '$(LegatoTargetProfile)' == '1.29.0' AND '@(_LegatoMainReference)' != '' AND '@(_LegatoUnityReference)' != '' AND '@(_LegatoZenjectReference)' != ''">true</LegatoEnableGameplay>
+      <LegatoEnableGameplay Condition="'$(LegatoEnableGameplay)' == '' AND '$(LegatoTargetProfile)' != '1.29.0' AND '@(_LegatoMainReference)' != '' AND '@(_LegatoDataModelsReference)' != '' AND '@(_LegatoColorsReference)' != '' AND '@(_LegatoGameplayCoreReference)' != '' AND '@(_LegatoUnityReference)' != '' AND '@(_LegatoZenjectReference)' != ''">true</LegatoEnableGameplay>
+      <LegatoEnableCoroutines Condition="'$(LegatoEnableCoroutines)' == '' AND '@(_LegatoHMLibReference)' != '' AND '@(_LegatoUnityReference)' != ''">true</LegatoEnableCoroutines>
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Include="$(LegatoSourceRoot)ForwardPolyfills\**\Transitions\1.37.1-1.38.0\**\*.cs"
+               Condition="'@(_LegatoDataModelsReference)' != '' AND '$(LegatoSourceOrder)' != '' AND '$(LegatoTargetOrder)' != '' AND $(LegatoSourceOrder) &lt;= 1 AND $(LegatoTargetOrder) &gt;= 2" />
+      <Compile Include="$(LegatoSourceRoot)ForwardPolyfills\**\Transitions\1.38.0-1.40.0\**\*.cs"
+               Condition="'@(_LegatoDataModelsReference)' != '' AND '$(LegatoSourceOrder)' != '' AND '$(LegatoTargetOrder)' != '' AND $(LegatoSourceOrder) &lt;= 2 AND $(LegatoTargetOrder) &gt;= 3" />
+      <Compile Include="$(LegatoSourceRoot)ForwardPolyfills\**\Transitions\1.40.0-1.42.0\**\*.cs"
+               Condition="('@(_LegatoAudioReference)' != '' OR ('$(LegatoTargetProfile)' == '1.42.0' AND '@(_LegatoMainReference)' != '')) AND '$(LegatoSourceOrder)' != '' AND '$(LegatoTargetOrder)' != '' AND $(LegatoSourceOrder) &lt;= 3 AND $(LegatoTargetOrder) &gt;= 4" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\GlobalNamespace\BeatmapKey\BeatmapKeyExtensions.cs"
+               Condition="('@(_LegatoDataModelsReference)' != '' OR ('$(LegatoTargetProfile)' == '1.29.0' AND '@(_LegatoMainReference)' != '')) AND '@(_LegatoColorsReference)' != ''" />
+      <Compile Include="$(LegatoSourceRoot)Library\Gameplay\**\*.cs"
+               Exclude="$(LegatoSourceRoot)Library\Gameplay\GameplayMetadataProvider.cs"
+               Condition="'$(LegatoEnableGameplay)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Library\Coroutines\**\Versions\$(LegatoTargetProfile)\**\*.cs"
+               Condition="'$(LegatoEnableCoroutines)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Library\Presentation\**\*.cs;$(LegatoSourceRoot)Library\Resources\**\*.cs"
+               Condition="'$(LegatoEnableBSML)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\BeatSaberMarkupLanguage\**\*.cs"
+               Exclude="$(LegatoSourceRoot)**\Versions\**\*.cs"
+               Condition="'$(LegatoEnableBSML)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\BeatSaberMarkupLanguage\**\Versions\$(LegatoTargetProfile)\**\*.cs"
+               Condition="'$(LegatoEnableBSML)' == 'true' AND '$(LegatoTargetProfile)' != ''" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\BeatSaberMarkupLanguage\**\Versions\1.29.0-1.37.1\**\*.cs"
+               Condition="'$(LegatoEnableBSML)' == 'true' AND ('$(LegatoTargetProfile)' == '1.29.0' OR '$(LegatoTargetProfile)' == '1.37.1')" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\LeaderboardCore\**\*.cs"
+               Exclude="$(LegatoSourceRoot)**\Versions\**\*.cs"
+               Condition="'$(LegatoEnableLeaderboardCore)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Library\Leaderboards\LeaderboardCore\CustomLeaderboardAdapter.cs"
+               Condition="'$(LegatoEnableLeaderboardCore)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Library\Leaderboards\LeaderboardCore\SelectedLevelExtensions.cs"
+               Condition="'$(LegatoEnableLeaderboardCore)' == 'true' AND '@(_LegatoHarmonyReference)' != ''" />
+      <Compile Include="$(LegatoSourceRoot)Library\Leaderboards\PlatformLeaderboardContextExtensions.cs"
+               Condition="'@(_LegatoIPAReference)' != '' AND '@(_LegatoMainReference)' != ''" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\SiraUtil\**\*.cs"
+               Exclude="$(LegatoSourceRoot)**\Versions\**\*.cs;$(LegatoSourceRoot)Polyfills\SiraUtil\Web\IHttpResponse\**\*.cs"
+               Condition="'$(LegatoEnableSiraUtil)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\SongCore\**\*.cs"
+               Condition="'$(LegatoEnableSongCore)' == 'true' AND '$(LegatoSourceProfile)' == '1.29.0'" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\SongDataCore\**\*.cs"
+               Condition="'$(LegatoEnableSongDataCompatibility)' == 'true' AND '$(LegatoSourceProfile)' == '1.29.0'" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\BS_Utils\**\*.cs"
+               Condition="'$(LegatoEnableBSUtils)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\GlobalNamespace\BeatmapLevelPack\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\LevelCollectionNavigationController\BeatmapLevelPackAdapterExtensions.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\LevelCollectionViewController\BeatmapLevelPackAdapterExtensions.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\LevelCollectionViewController\BeatmapLevelSelectionSubscription.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\LevelFilteringNavigationController\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\LevelSelectionNavigationController\LevelSelectionSession.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\StandardLevelDetailViewController\**\*.cs"
+               Condition="'$(LegatoSourceProfile)' == '1.29.0'" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\SiraUtil\Web\IHttpResponse\**\*.cs"
+               Condition="'$(LegatoEnableSiraUtil)' == 'true' AND '$(LegatoEnableHttp)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Library\Beatmaps\**\*.cs"
+               Exclude="$(LegatoSourceRoot)**\Versions\**\*.cs;$(LegatoSourceRoot)Library\Beatmaps\MutableBeatmapLevelPack.cs"
+               Condition="'$(LegatoEnableSongCore)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Library\Beatmaps\MutableBeatmapLevelPack.cs"
+               Condition="'@(_LegatoIPAReference)' != '' AND '@(_LegatoDataModelsReference)' != '' AND '@(_LegatoUnityReference)' != '' AND '$(LegatoTargetProfile)' != '1.29.0'" />
+      <Compile Include="$(LegatoSourceRoot)Library\Gameplay\GameplayMetadataProvider.cs"
+               Condition="'$(LegatoEnableGameplay)' == 'true' AND ('$(LegatoEnableGameSettings)' == 'true' OR '$(LegatoTargetProfile)' == '1.29.0' OR '$(LegatoTargetProfile)' == '1.37.1' OR '$(LegatoTargetProfile)' == '1.38.0')" />
+      <Compile Include="$(LegatoSourceRoot)Library\Rooms\**\*.cs"
+               Condition="'$(LegatoEnableGameSettings)' == 'true' OR '$(LegatoTargetProfile)' == '1.29.0' OR ('$(LegatoTargetProfile)' == '1.38.0' AND '@(_LegatoDataModelsReference)' != '')" />
+      <Compile Include="$(LegatoSourceRoot)Library\Platform\**\*.cs"
+               Exclude="$(LegatoSourceRoot)**\Versions\**\*.cs"
+               Condition="'$(LegatoEnablePlatform)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Library\Platform\Versions\$(LegatoTargetProfile)\**\*.cs"
+               Condition="'$(LegatoEnablePlatform)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Library\Platform\Versions\1.37.1-1.40.0\**\*.cs"
+               Condition="'$(LegatoEnablePlatform)' == 'true' AND ('$(LegatoTargetProfile)' == '1.37.1' OR '$(LegatoTargetProfile)' == '1.38.0' OR '$(LegatoTargetProfile)' == '1.40.0')" />
+      <Compile Include="$(LegatoSourceRoot)Library\XR\XrDeviceDiscovery.cs"
+               Condition="'$(LegatoEnableXR)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\GlobalNamespace\MainCamera\**\*.cs"
+               Condition="'$(LegatoTargetProfile)' == '1.29.0' OR '$(LegatoEnableSpatialTracking)' == 'true'" />
+      <Compile Include="$(LegatoSourceRoot)Polyfills\GlobalNamespace\OculusVRHelper\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\PauseController\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\UnityXRHelper\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\UnityXRSystemState\**\*.cs;$(LegatoSourceRoot)Polyfills\GlobalNamespace\VariableMovementDataProvider\**\*.cs"
+               Condition="'$(LegatoEnableHarmonyEvents)' == 'true'" />
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <LegatoCurrentVersion>1.44.1</LegatoCurrentVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <LegatoGameVersion Include="1.29.0;1.29.1" Profile="1.29.0" Order="0" />
+    <LegatoGameVersion Include="1.37.1;1.37.2" Profile="1.37.1" Order="1" />
+    <LegatoGameVersion Include="1.38.0;1.39.0;1.39.1" Profile="1.38.0" Order="2" />
+    <LegatoGameVersion Include="1.40.0;1.40.1;1.40.2;1.40.3;1.40.4;1.40.5;1.40.6;1.40.7;1.40.8" Profile="1.40.0" Order="3" />
+    <LegatoGameVersion Include="1.42.0;1.42.1;1.42.2;1.42.3;1.43.0;1.44.0;1.44.1" Profile="1.42.0" Order="4" />
+  </ItemGroup>
+</Project>

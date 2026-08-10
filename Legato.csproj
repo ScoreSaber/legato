@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <IsPackable>true</IsPackable>
+    <PackageId>LegatoBS</PackageId>
+    <Version>$(LegatoVersion)</Version>
+    <Title>Legato</Title>
+    <Authors>ScoreSaber</Authors>
+    <Description>Source compatibility helpers for Beat Saber PC mods</Description>
+    <PackageTags>beat-saber;modding;compatibility;polyfill</PackageTags>
+    <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/ScoreSaber/legato</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ScoreSaber/legato.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="LIBRARY.md" Pack="true" PackagePath="\" />
+    <None Include="LICENSE" Pack="true" PackagePath="\" />
+    <None Include="Build\Legato.props" Pack="true" PackagePath="build\LegatoBS.props" />
+    <None Include="Build\Legato.Versions.props" Pack="true" PackagePath="build\Legato.Versions.props" />
+    <None Include="Build\Legato.targets" Pack="true" PackagePath="build\LegatoBS.targets" />
+    <None Include="Source\**\*.cs" Pack="true" PackagePath="build\Source\%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>
