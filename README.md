@@ -1,5 +1,7 @@
 # [Legato](https://en.wikipedia.org/wiki/Legato)
 
+[![NuGet](https://img.shields.io/nuget/v/LegatoBS)](https://www.nuget.org/packages/LegatoBS)
+
 A compatibility library for Beat Saber PC mods
 
 This originally started out inside [ScoreSaber's PC Mod](https://github.com/ScoreSaber/pc-mod) and we decided to extract it into a re-usable library as we may need it for future projects or others may also stand to benefit. For us Legato keeps most game version differences out of the mod itself helping us focus on what's important
