@@ -31,7 +31,7 @@ The same setup can be added by hand:
 </PropertyGroup>
 
 <ItemGroup>
-  <PackageReference Include="LegatoBS" Version="0.1.0" PrivateAssets="all" />
+  <PackageReference Include="LegatoBS" Version="0.1.1" PrivateAssets="all" />
 </ItemGroup>
 ```
 

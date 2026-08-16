@@ -1,6 +1,8 @@
 #nullable enable
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Legato
 {
@@ -9,6 +11,21 @@ namespace Legato
         internal static IDisposable SubscribeToSongsLoaded(Action callback)
         {
             return new SongsLoadedSubscription(callback);
+        }
+
+        internal static async Task<bool> RefreshSongsAsync(this SongCore.Loader loader, bool fullRefresh, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            var loaded = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            using (SubscribeToSongsLoaded(() => loaded.TrySetResult(true)))
+            {
+                loader.RefreshSongs(fullRefresh);
+                Task completed = await Task.WhenAny(loaded.Task, Task.Delay(timeout, cancellationToken));
+                if (completed == loaded.Task)
+                    return true;
+
+                cancellationToken.ThrowIfCancellationRequested();
+                return false;
+            }
         }
     }
 

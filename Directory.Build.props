@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <LegatoVersion>0.1.0</LegatoVersion>
+    <LegatoVersion>0.1.1</LegatoVersion>
     <Deterministic>true</Deterministic>
     <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>

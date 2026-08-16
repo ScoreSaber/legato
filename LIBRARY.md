@@ -6,6 +6,8 @@ This lists the small reusable APIs supplied by Legato. Transparent polyfills mir
 | --- | --- | --- |
 | Beatmaps | `BeatmapLevelsModel.GetLoadedBeatmapLevels()` | Enumerate loaded levels |
 | Beatmaps | `BeatmapLevelsModel.GetLevelByHash(hash, cancellationToken)` | Find a custom level by hash |
+| Beatmaps | `SongCoreLoaderEvents.SubscribeToSongsLoaded(callback)` | Subscribe to SongCore's loaded event across event signature changes |
+| Beatmaps | `SongCore.Loader.RefreshSongsAsync(fullRefresh, timeout, cancellationToken)` | Refresh SongCore and wait for completion with a timeout |
 | Beatmaps | `BeatmapLevel.TryGetDifficultyDetails(key, out details)` | Read difficulty metadata |
 | Beatmaps | `BeatmapMaxScoreCache.GetMaxScore(level, key)` | Compute and cache maximum score |
 | Coroutines | `SharedCoroutineStarterAdapter.StartCoroutine(routine)` | Adapt the 1.29.0 game coroutine runner |
